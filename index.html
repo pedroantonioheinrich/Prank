@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>System Alert</title>
+    <title>Sistema de Segurança</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         
@@ -14,27 +14,66 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            cursor: none;
+            cursor: default;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        /* Linhas de scan horizontais (efeito CRT) */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.15) 0px,
-                rgba(0,0,0,0.15) 1px,
-                transparent 1px,
-                transparent 3px
-            );
-            pointer-events: none;
-            z-index: 9998;
+        #tela-inicial {
+            text-align: center;
+            animation: pulsar 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulsar {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        #tela-inicial h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #0f0;
+        }
+        
+        #tela-inicial p {
+            font-size: 16px;
+            color: #0a0;
+            margin-bottom: 40px;
+        }
+        
+        #botao-clique {
+            background: transparent;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 24px;
+            padding: 20px 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+        
+        #botao-clique:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
+        }
+        
+        .cursor-piscante::after {
+            content: '█';
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
         
         #terminal {
+            display: none;
             padding: 40px;
             width: 100%;
             height: 100%;
@@ -43,13 +82,13 @@
         
         .linha {
             opacity: 0;
-            animation: piscar 0.1s forwards;
+            animation: aparecer 0.1s forwards;
             font-size: 16px;
             line-height: 1.5;
             margin-bottom: 2px;
         }
         
-        @keyframes piscar {
+        @keyframes aparecer {
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
@@ -60,16 +99,8 @@
         .cinza { color: #666; }
         .branco { color: #fff; }
         .roxo { color: #a0f; }
-        .piscante {
-            animation: blink 0.5s infinite;
-        }
+        .piscante { animation: blink 0.5s infinite; }
         
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-        
-        /* Barra de progresso */
         .barra-container {
             width: 400px;
             height: 20px;
@@ -91,52 +122,65 @@
             margin-top: 5px;
         }
         
-        /* Efeito glitch */
-        .glitch {
-            animation: glitch 0.3s infinite;
-        }
-        
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -1px); }
-            60% { transform: translate(-1px, 1px); }
-            80% { transform: translate(1px, -2px); }
-            100% { transform: translate(0); }
-        }
-        
-        .cursor-piscante::after {
-            content: '█';
-            animation: blink 0.5s infinite;
-        }
-        
         #countdown {
             font-size: 48px;
             color: #f00;
             font-weight: bold;
             margin: 20px 0;
         }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.15) 0px,
+                rgba(0,0,0,0.15) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 9998;
+        }
     </style>
 </head>
 <body>
+    <!-- TELA INICIAL - A pessoa PRECISA clicar aqui -->
+    <div id="tela-inicial">
+        <h1>❤️ MENSAGEM ESPECIAL PRA VOCÊ</h1>
+        <p>Tenho uma mensagem especial pora você...</p>
+        <button id="botao-clique" class="cursor-piscante">▶ Clique para ver</button>
+    </div>
+
+    <!-- TERMINAL (escondido até clicar) -->
     <div id="terminal"></div>
 
     <script>
-        // === TELA CHEIA AUTOMÁTICA ===
-        function entrarTelaCheia() {
+        // === QUANDO A PESSOA CLICA ===
+        document.getElementById('botao-clique').addEventListener('click', function() {
+            // 1️⃣ Entra em tela cheia (agora funciona porque teve clique!)
             const el = document.documentElement;
             if (el.requestFullscreen) el.requestFullscreen();
             else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
             else if (el.msRequestFullscreen) el.msRequestFullscreen();
-        }
-        entrarTelaCheia();
-        setInterval(entrarTelaCheia, 2000);
+            
+            // 2️⃣ Esconde a tela inicial e mostra o terminal
+            document.getElementById('tela-inicial').style.display = 'none';
+            document.getElementById('terminal').style.display = 'block';
+            
+            // 3️⃣ Inicia o "hack" simulado
+            iniciarHack();
+        });
 
-        // Bloqueia ESC (visualmente)
+        // Impede ESC de sair da tela cheia
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 e.preventDefault();
-                entrarTelaCheia();
+                const el = document.documentElement;
+                if (el.requestFullscreen) el.requestFullscreen();
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                else if (el.msRequestFullscreen) el.msRequestFullscreen();
             }
         });
 
@@ -170,7 +214,7 @@
         }
 
         async function iniciarHack() {
-            // === FASE 1: ACESSO INICIAL ===
+            // FASE 1: ACESSO INICIAL
             await adicionarLinha('Inicializando sistema de acesso remoto...', 'cinza', 300);
             await adicionarLinha('[>] Escaneando porta 22...', 'verde', 500);
             await adicionarLinha('[>] Escaneando porta 443...', 'verde', 400);
@@ -184,7 +228,7 @@
             await adicionarLinha('╚══════════════════════════════════════╝', 'verde', 200);
             await adicionarLinha('');
 
-            // === FASE 2: BRUTE FORCE ===
+            // FASE 2: BRUTE FORCE
             await adicionarLinha('[>] Iniciando ataque de força bruta...', 'amarelo', 500);
             
             const senhas = ['admin123', 'password', '123456', 'senha', 'admin'];
@@ -196,12 +240,11 @@
             await adicionarHTML('    <span class="piscante" style="color: #0f0;">✅ ACESSO CONCEDIDO!</span>', 'verde', 400);
             await adicionarLinha('');
 
-            // === FASE 3: EXTRAÇÃO DE DADOS ===
+            // FASE 3: EXTRAÇÃO DE DADOS
             await adicionarLinha('[>] Estabelecendo conexão SSH...', 'verde', 300);
             await adicionarLinha('[>] Conexão estabelecida com sucesso!', 'verde', 200);
             await adicionarLinha('[>] Iniciando extração de dados...', 'amarelo', 400);
             
-            // Barra de progresso falsa
             const progressoHTML = `
                 <div style="margin: 10px 0;">
                     <div class="barra-container">
@@ -212,7 +255,6 @@
             `;
             await adicionarHTML(progressoHTML, 'verde', 200);
 
-            // Anima a barra de progresso
             for (let i = 0; i <= 100; i += Math.floor(Math.random() * 8) + 3) {
                 if (i > 100) i = 100;
                 const barra = document.getElementById('barra');
@@ -224,7 +266,7 @@
 
             await adicionarLinha('');
 
-            // === FASE 4: ARQUIVOS ENCONTRADOS ===
+            // FASE 4: ARQUIVOS ENCONTRADOS
             await adicionarLinha('╔══════════════════════════════════════╗', 'roxo', 200);
             await adicionarLinha('║   📁 ARQUIVOS ENCONTRADOS            ║', 'roxo', 200);
             await adicionarLinha('╠══════════════════════════════════════╣', 'roxo', 100);
@@ -237,7 +279,7 @@
             await adicionarLinha('');
             await adicionarLinha('[>] Baixando arquivos selecionados...', 'amarelo', 300);
 
-            // === FASE 5: ACESSO A WEBCAM (SIMULADO) ===
+            // FASE 5: WEBCAM
             await adicionarLinha('');
             await adicionarLinha('╔══════════════════════════════════════╗', 'vermelho', 300);
             await adicionarLinha('║   📷 ACESSO À WEBCAM ATIVADO        ║', 'vermelho', 200);
@@ -246,7 +288,7 @@
             await adicionarLinha('╚══════════════════════════════════════╝', 'vermelho', 200);
             await adicionarLinha('');
 
-            // === FASE 6: MENSAGEM FINAL ASSUSTADORA ===
+            // FASE 6: MENSAGEM FINAL
             await adicionarLinha('', 'verde', 500);
             await adicionarHTML(`
                 <div style="border: 2px solid #f00; padding: 20px; margin: 20px 0; text-align: center;">
@@ -256,7 +298,7 @@
                     </div>
                     <div style="color: #ff0; font-size: 14px;">
                         Para recuperar o acesso, entre em contato conosco em:<br>
-                        <span style="color: #0ff;">anon@tutanota.io</span>
+                        <span style="color: #0ff;">resgate@hacker-falso.xyz</span>
                     </div>
                     <div id="countdown" class="piscante">60</div>
                     <div style="color: #f00; font-size: 12px;">
@@ -265,7 +307,6 @@
                 </div>
             `, 'verde', 500);
 
-            // Contagem regressiva falsa
             let tempo = 60;
             const countdownEl = document.getElementById('countdown');
             const intervaloCountdown = setInterval(() => {
@@ -280,8 +321,7 @@
                 }
             }, 1000);
 
-            // === FASE 7: FINALIZAÇÃO DIVERTIDA ===
-            await new Promise(r => setTimeout(r, 10000)); // Espera 10s
+            await new Promise(r => setTimeout(r, 10000));
             await adicionarLinha('');
             await adicionarHTML(`
                 <div style="border: 2px solid #0f0; padding: 20px; margin: 20px 0; text-align: center; background: #001100;">
@@ -289,20 +329,16 @@
                     <div style="color: #fff; font-size: 16px;">
                         Seu computador está seguro! <br><br>
                         <span style="color: #0f0;">Nada foi hackeado de verdade.</span><br>
-                        Chora Viadinho!!! KKKKKKKKK 🛡️
+                        Isso foi apenas uma brincadeira. 🛡️
                     </div>
                 </div>
             `, 'verde', 500);
 
-            // Sai da tela cheia
             setTimeout(() => {
                 if (document.exitFullscreen) document.exitFullscreen();
                 document.body.style.cursor = 'default';
             }, 5000);
         }
-
-        // Inicia tudo
-        iniciarHack();
     </script>
 </body>
 </html>
